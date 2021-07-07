@@ -1,0 +1,13 @@
+def myfunc(*args):
+    orginal_value = 0
+    myList = []
+    mytuple = (args)
+    size = len(mytuple)
+    result = sum(args)
+    mean = result/size
+    for num in mytuple:
+        myList.append(abs(mean-num))
+    for num in myList:
+        orginal_value = orginal_value + num 
+    final_answer = orginal_value/len(mytuple)
+    print(f'The Mean Absolute Deviation of these numbers is {final_answer}')
