@@ -1,0 +1,132 @@
+from IPython.display import clear_output
+board = ['#',' ',' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+def showboard(board):
+    clear_output()
+    print(board[1] + '|' + board[2] + '|'+ board[3])
+    print(board[4] + '|' + board[5] + '|'+ board[6])
+    print(board[7] + '|' + board[8] + '|'+ board[9])
+    print(checkifover(board))
+def playermarker():
+    showboard(board)
+    player1_marker = ''
+    player2_marker = ''
+    while player1_marker != 'X' and player1_marker != "O":
+        player1_marker = input('Would you like to be X or O')
+    if player1_marker == 'X':
+        player2_marker = 'O'
+    else:
+        player2_marker = 'X'
+    return(player1_marker, player2_marker)
+
+def find_player_marker():
+    global playermarkers
+    playermarkers = playermarker()
+acceptable_numbers = ['1','2','3','4','5','6','7','8','9']
+def playerplace1():
+    first_move = ''
+    showboard(board)
+   
+    
+    while first_move not in acceptable_numbers:
+        first_move = input('Where on the board do you want to place a ' + playermarkers[0] + ' ,top right being one (1-9)') 
+    userinput = int(first_move)
+    board[userinput] = playermarkers[0]
+    acceptable_numbers.remove(first_move)
+    showboard(board)
+    
+def checkifover(board):
+    size = len(board) 
+    #straight across win
+    for i in range(1,8,3):
+        if board[i] == board[i + 1] and board[i + 1] == board[i + 2]:
+            if board[i] != ' ':  
+                print('Win for ' + board[i]) 
+                return 'Win'
+    #diagonal win   
+    for i in range(3,4):  
+            
+        if board[i] == board[i + 2] and board[i + 2] == board[i + 4]:
+            if board[i] != ' ':  
+                
+                print ('Win for ' + board[i])
+                return 'Win'
+    #middle down win    
+    for i in range(2,3):
+        if board[i] == board[i + 3] and board[i + 3] == board[i + 6]:
+            if board[i] != ' ':  
+ 
+                print ('Win for ' + board[i])
+                return 'Win'
+    #right to left diagonal win    
+    for i in range(1,2):
+        if board[i] == board[i + 4] and board[i + 4] == board[i + 8]:
+            if board[i] != ' ':  
+  
+                
+                print ('Win for ' + board[i])
+                return 'Win'
+    #right down win
+    for i in range(3,4):
+        if board[i] == board[i + 3] and board[i + 3] == board[i + 6]:
+            if board[i] != ' ':  
+
+                
+                print ('Win for ' + board[i])
+                return 'Win'
+    #left down win
+    for i in range(1,2):
+        if board[i] == board[i + 3] and board[i + 3] == board[i + 6]:
+            if board[i] != ' ':  
+  
+                print ('Win for ' + board[i])
+                return 'Win'
+
+    if ' ' not in board:
+        print('Draw')
+        return 'Draw'
+    return 'Ongoing Match'
+def playerplace2():
+    second_move = ''
+    showboard(board)
+    while second_move not in acceptable_numbers:
+        second_move = input('Where on the board do you want to place a ' + playermarkers[1] + ' ,top right being one (1-9)')
+    userinput = int(second_move)
+    acceptable_numbers.remove(second_move)
+    board[int(second_move)] = playermarkers[1]
+    showboard(board)
+def playagain():
+    play_again = ''
+    allowedanswers = ['Y','N']
+    while play_again not in allowedanswers:
+        play_again = input('Would you like to play again?(Y or N)')
+    if play_again == 'Y':
+        for element in range(len(board)):
+            board[element] = ' '
+        for num in range(1,10):
+            acceptable_numbers.append(str(num))
+        
+        showboard(board)
+        playgame()
+    else:
+        print('Thank you for playing!')
+            
+    
+    
+    
+    
+    
+    
+def playgame():
+    showboard(board)
+    playermarker()
+    find_player_marker()
+    while True:
+        if checkifover(board) == 'Draw' or checkifover(board) == 'Win':
+            break
+        playerplace1()
+        if checkifover(board) == 'Draw' or checkifover(board) == 'Win':
+            break
+        playerplace2()
+        if checkifover(board) == 'Draw' or checkifover(board) == 'Win':
+            break
+    playagain()
