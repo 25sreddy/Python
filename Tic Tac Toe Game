@@ -24,7 +24,7 @@ def find_player_marker():
 acceptable_numbers = ['1','2','3','4','5','6','7','8','9']
 def playerplace1():
     first_move = ''
-    showboard(board)
+    
    
     
     while first_move not in acceptable_numbers:
@@ -87,7 +87,7 @@ def checkifover(board):
     return 'Ongoing Match'
 def playerplace2():
     second_move = ''
-    showboard(board)
+    
     while second_move not in acceptable_numbers:
         second_move = input('Where on the board do you want to place a ' + playermarkers[1] + ' ,top right being one (1-9)')
     userinput = int(second_move)
@@ -130,3 +130,4 @@ def playgame():
         if checkifover(board) == 'Draw' or checkifover(board) == 'Win':
             break
     playagain()
+playgame()
