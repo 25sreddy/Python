@@ -1,0 +1,244 @@
+import random
+import colorama
+from colorama import init
+init()
+from colorama import Fore, Back, Style
+newmoney = 500
+dealer_total = 0
+player_total = 0
+suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
+ranks = ('Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King', 'Ace')
+values = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7, 'Eight':8, 
+        'Nine':9, 'Ten':10, 'Jack':10, 'Queen':10, 'King':10, 'Ace':11}
+class Card:
+    def __init__(self, suit, rank):
+        self.suit = suit
+        self.rank = rank
+        self.value = values[rank]
+    def __str__(self):
+        return self.rank+ ' of ' + self.suit
+class Deck:
+
+    def __init__(self):
+        self.new_deck = []
+        for suit in suits:
+            for rank in ranks:
+                self.new_deck.append(Card(suit,rank))
+    def randomize_deck(self):
+        random.shuffle(self.new_deck)
+        return self.new_deck
+    def hit(self):
+        return self.new_deck.pop(0)
+
+mydeck = Deck()
+mydeck.randomize_deck()
+
+class Player:
+    
+    def __init__(self, name, money = 500):
+        self.playerhand = []
+        self.name = name
+        self.money = money
+        self.result = ''
+        self.player_total = 0
+    def playerchoice(self):
+        global player_total
+        self.result = ''
+        while self.result not in ['Hit', 'Stand']:
+            self.result = input(self.name + " would you like to 'Hit' or 'Stand'?")
+        
+        if self.result == 'Hit':
+            self.playerhand.append(mydeck.hit())
+            player_total += self.playerhand[-1].value
+            return self.player_total
+        else:
+            return 'stand'
+    def wipe(self):
+        self.playerhand.clear()
+    def intial_card(self):
+        global player_total
+        for i in range(2):
+            self.playerhand.append(mydeck.hit())
+            player_total += self.playerhand[-1].value
+        print('Money:' + str(newmoney))
+        for item in self.playerhand:
+            print(item)
+
+
+    def playerlist(self):
+        return self.playerhand
+player1 = Player('Player 1')
+
+
+class CPU:
+    
+    def __init__(self,name = 'computer'):
+        self.name = name
+        self.dealerhand = []
+        self.dealer_total = 0
+
+    def first_card(self):
+        global dealer_total
+        for i in range(2):
+            self.dealerhand.append(mydeck.hit())
+            dealer_total += self.dealerhand[-1].value
+    def CPUhit(self):
+        global dealer_total
+        if dealer_total < 17:
+            self.dealerhand.append(mydeck.hit())
+            dealer_total += self.dealerhand[-1].value
+        elif self.dealer_total > 21:
+            for num in self.dealerhand:
+                if num.value == 11:
+                    dealer_total = dealer_total-10
+                else:
+                    return 'bust'
+        else:
+            return 'done'
+    def wipe(self):
+        self.dealerhand.clear()
+    def CPUlist(self):
+        return self.dealerhand
+computer = CPU()
+
+
+def showsomescreen():
+
+    print("\nPlayer's Hand:")
+    for item in player1.playerlist():
+        print(item)
+    print("\nDealer's Hand")
+    print(computer.CPUlist()[0])
+    print('????????????')
+         
+def showscreen():
+    
+    print('\n' + 'Your Total: ' + str(player_total))
+    print("\nPlayer's Hand:")
+    for item in player1.playerlist():
+        print(item)
+    print('\n' + 'Dealer Total: ' + str(dealer_total))
+    print("\nDealer's Hand\n")
+    for item in computer.CPUlist():
+        print(item)
+
+def placebets(cash):
+    global newmoney
+    money = cash
+    while True:
+        try:
+            result = int(input(f'How much would you like to bet?(Money: {newmoney})  '))
+
+        except:
+            print('An error occurred! Please try again!')
+            continue
+        else:
+            if result <= money:
+                break
+    return (money, result)
+def playagain():
+    global dealer_total
+    global player_total
+    tester = []
+    result = ''
+    answer = ['Yes', 'No']
+    while result not in answer:
+        result = input("Would You Like to Play Again?('Yes' or 'No')")
+    if result == 'Yes':
+        dealer_total = 0
+        player_total = 0
+        mydeck = Deck()
+        mydeck.randomize_deck()
+        player1.wipe()
+        computer.wipe()
+        playgame()
+        
+
+    else:
+        print(f'Thank you for playing your final score was ${newmoney}')
+
+def playgame():
+    print
+    global newmoney
+    global dealer_total
+    global player_total
+
+    gamestart = True
+    while gamestart:
+        print('\nWelcome to BlackJack! Get as close to 21 as you can without going over!\n\
+        Dealer hits until they reach 17. ACES COUNT ONLY AS 11.\n')
+        CPU_Go = False
+        game_on = True
+        a, b = placebets(newmoney)
+        player1.intial_card()
+        computer.first_card()
+        gamestart = False
+    while game_on:    
+        choice = player1.playerchoice()
+        
+        showsomescreen()
+        
+        if type(choice) == type(1):
+            if player_total > 21:
+                for ele in player1.playerlist():
+                    if ele.value == 11:
+                        player_total-10
+                else:
+                    print(Fore.RED + 'Dealer Wins, You Busted')
+                    print('New Balance: ' + str(a-b))
+                    newmoney = a-b
+                    print(Style.RESET_ALL)
+                    game_on =  False
+                    break
+            else:
+                pass
+        elif type(choice) == type(''):
+            if choice == 'stand':
+                CPU_Go = True
+                game_on =  False
+                break
+            else:
+                pass
+        else:
+            pass
+    while CPU_Go:
+        if dealer_total > 21:
+            for ele in player1.playerlist():
+                if ele.value == 11:
+                    player_total-10
+            else:   
+                print(Fore.RED + 'You Win! CPU Busted')
+                print('New Balance: ' + str(a+b))
+                newmoney = a+b
+                print(Style.RESET_ALL)
+                CPU_Go =  False
+                break
+        elif computer.CPUhit() == 'done':
+            if dealer_total > player_total:
+                print(Fore.RED + 'Dealer Wins')
+                print('New Balance: ' + str(a-b))
+                newmoney = a-b
+                print(Style.RESET_ALL)
+                CPU_Go =  False
+                break
+            elif dealer_total < player_total:
+                print(Fore.RED + 'You Win')
+                print('New Balance: ' + str(a+b))
+                newmoney = a+b
+                print(Style.RESET_ALL)
+                CPU_Go =  False
+                break
+            else:
+                print(Fore.RED + "It's a Tie")
+                print('New Balance: ' + str(a))
+                newmoney = a
+                print(Style.RESET_ALL)
+                CPU_Go =  False
+                break
+
+
+    showscreen()
+    print('Game Over, Thank You for Playing!')
+    playagain()
+
+playgame()
